@@ -1,9 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:rickandmorty/app/getit.dart';
 import 'package:rickandmorty/app/router.dart';
 import 'package:rickandmorty/app/theme.dart';
 
 
-void main() => runApp(const MyApp());
+void main() {
+  setupLocater();
+  runApp(const MyApp());
+}
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
