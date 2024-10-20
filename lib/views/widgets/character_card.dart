@@ -1,11 +1,35 @@
 import 'package:flutter/material.dart';
+import 'package:rickandmorty/app/locater.dart';
 import 'package:rickandmorty/models/characters_model.dart';
+import 'package:rickandmorty/services/preferences_service.dart';
 
-class CharacterCard extends StatelessWidget {
-final CharacterModel characterModel;
+class CharacterCard extends StatefulWidget {
+  final CharacterModel characterModel;
+  bool isFavorited;
 
+  CharacterCard({
+    super.key,
+    required this.characterModel,
+    this.isFavorited = false,
+  });
 
-  const CharacterCard({super.key, required this.characterModel});@override
+  @override
+  State<CharacterCard> createState() => _CharacterCardState();
+}
+
+class _CharacterCardState extends State<CharacterCard> {
+  void favorited() {
+    if (widget.isFavorited) {
+      locator<PreferencesService>().removeCharacter(widget.characterModel.id);
+      widget.isFavorited = false;
+    } else {
+      locator<PreferencesService>().saveCharecter(widget.characterModel.id);
+      widget.isFavorited = true;
+    }
+    setState(() {});
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 7),
@@ -22,7 +46,7 @@ final CharacterModel characterModel;
                 ClipRRect(
                   borderRadius: BorderRadius.circular(6),
                   child: Image.network(
-                    characterModel.image,
+                    widget.characterModel.image,
                     height: 100,
                   ),
                 ),
@@ -34,8 +58,8 @@ final CharacterModel characterModel;
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                       Text(
-                        characterModel.name,
+                      Text(
+                        widget.characterModel.name,
                         style: const TextStyle(
                           fontSize: 14,
                           fontWeight: FontWeight.w500,
@@ -44,18 +68,27 @@ final CharacterModel characterModel;
                       const SizedBox(
                         height: 5,
                       ),
-                      _infoWidget(type: 'Köken', value: characterModel.origin.name),
+                      _infoWidget(
+                          type: 'Köken',
+                          value: widget.characterModel.origin.name),
                       const SizedBox(
                         height: 4,
                       ),
-                      _infoWidget(type: 'Durum', value:'${characterModel.status} - ${characterModel.species}'),
+                      _infoWidget(
+                          type: 'Durum',
+                          value:
+                              '${widget.characterModel.status} - ${widget.characterModel.species}'),
                     ],
                   ),
                 )
               ],
             ),
           ),
-          IconButton(onPressed: (){}, icon: const Icon(Icons.bookmark))
+          IconButton(
+            onPressed: favorited,
+            icon: Icon(
+                widget.isFavorited ? Icons.bookmark : Icons.bookmark_border),
+          )
         ],
       ),
     );
